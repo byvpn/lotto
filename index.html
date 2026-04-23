@@ -1,9 +1,765 @@
-<html>
+<!DOCTYPE html>
+<html lang="th">
 <head>
-    <title>Lottery Manager App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 เจ้ามือหวย Full Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f2d45;
+    --gold: #f5c842;
+    --gold2: #e0a800;
+    --green: #22c55e;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --line: #00b900;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d1b2e 0%, #1a2a45 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+  header span {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .badge {
+    background: var(--gold);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 99px;
+    letter-spacing: 1px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: var(--surface2);
+  }
+
+  /* CONTENT */
+  .content {
+    display: none;
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+  }
+  .content.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* FORM */
+  label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 4px;
+    margin-top: 10px;
+  }
+  label:first-child { margin-top: 0; }
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    font-family: 'Sarabun', sans-serif;
+    outline: none;
+    transition: border 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--gold); }
+  input[type="file"] { display: none; }
+
+  /* IMAGE PREVIEW */
+  .img-upload {
+    background: var(--surface2);
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: pointer;
+    gap: 6px;
+    transition: border-color 0.2s;
+    min-height: 90px;
+  }
+  .img-upload:hover { border-color: var(--gold); }
+  .img-upload img { max-height: 120px; border-radius: 8px; }
+  .img-upload span { font-size: 0.75rem; color: var(--muted); }
+
+  /* ENTRY TABLE */
+  .entry-grid {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr 1fr;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .entry-grid .col-head {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .entry-grid input {
+    text-align: center;
+    padding: 8px 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.88rem;
+  }
+  .entry-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: center;
+  }
+  .rows-container { margin-bottom: 10px; }
+  .row-item {
+    display: grid;
+    grid-template-columns: 30px 60px 1fr 1fr 1fr 28px;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .row-item input { padding: 7px 4px; }
+  .row-del {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .row-del:hover { opacity: 1; }
+  .row-idx {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+  }
+  .btn-gold:hover { filter: brightness(1.1); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover { filter: brightness(1.1); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-add {
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-top: 4px;
+  }
+  .btn-add:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm {
+    padding: 7px 12px;
+    font-size: 0.75rem;
+    width: auto;
+    margin-top: 0;
+  }
+
+  /* PAYOUT GRID */
+  .payout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .payout-item label { margin-top: 0; }
+
+  /* RESULT */
+  .result-box {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+  .result-box.show { display: block; }
+  .result-big {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .profit { color: var(--green); }
+  .loss { color: var(--red); }
+  .result-detail {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.8;
+  }
+
+  /* HISTORY */
+  .history-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .history-item:hover { border-color: var(--gold); }
+  .history-item.expanded { border-color: var(--gold); }
+  .h-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .h-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .h-date {
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .h-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .h-stat {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .h-stat span {
+    color: var(--gold);
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .h-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    display: none;
+  }
+  .history-item.expanded .h-actions { display: flex; }
+  .h-detail {
+    display: none;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  .history-item.expanded .h-detail { display: block; }
+  .h-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr 1fr;
+    gap: 4px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .h-row:last-child { border-bottom: none; }
+  .h-row .num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--gold); }
+  .h-row .amt { color: var(--muted); text-align: center; font-size: 0.75rem; }
+  .h-head { color: var(--muted); font-size: 0.68rem; font-weight: 600; }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    padding: 30px 0;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 0.82rem;
+    z-index: 999;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
 </head>
 <body>
-    <h1>Welcome to the Lottery Manager App</h1>
-    <p>Manage your lottery tickets here.</p>
+
+<header>
+  <div>
+    <h1>💰 เจ้ามือหวย Full Pro</h1>
+    <span> By TaeTaRuMa </span>
+  </div>
+  <span class="badge">v2.0</span>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('entry')">📝 บันทึกโพย</div>
+  <div class="tab" onclick="switchTab('check')">🏆 ตรวจรางวัล</div>
+  <div class="tab" onclick="switchTab('history')">📋 ประวัติ</div>
+</div>
+
+<!-- TAB: ENTRY -->
+<div class="content active" id="tab-entry">
+
+  <div class="card">
+    <div class="card-title">👤 ข้อมูลลูกค้า</div>
+    <label>ชื่อลูกค้า</label>
+    <input type="text" id="customer-name" placeholder="กรอกชื่อ...">
+    <label>รูปใบโพย (ถ้ามี)</label>
+    <div class="img-upload" id="img-drop" onclick="document.getElementById('file-img').click()">
+      <img id="img-preview" src="" style="display:none">
+      <span id="img-label">📷 แตะเพื่อแนบรูป</span>
+    </div>
+    <input type="file" id="file-img" accept="image/*" onchange="previewImg(this)">
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔢 ตัวเลขแทง</div>
+    <div style="display:grid;grid-template-columns:30px 60px 1fr 1fr 1fr 28px;gap:5px;margin-bottom:6px">
+      <div></div>
+      <div class="col-head" style="font-size:0.68rem;color:var(--muted);text-align:center;">#</div>
+      <div class="col-head" style="font-size:0.68rem;color:var(--muted);text-align:center;">บน</div>
+      <div class="col-head" style="font-size:0.68rem;color:var(--muted);text-align:center;">ล่าง</div>
+      <div class="col-head" style="font-size:0.68rem;color:var(--muted);text-align:center;">โต๊ด</div>
+      <div></div>
+    </div>
+    <div id="rows-container"></div>
+    <button class="btn btn-add" onclick="addRow()">➕ เพิ่มแถว</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💸 อัตราจ่าย</div>
+    <div class="payout-grid">
+      <div>
+        <label>จ่ายบน (x)</label>
+        <input type="number" id="pay-top" value="90" min="1">
+      </div>
+      <div>
+        <label>จ่ายล่าง (x)</label>
+        <input type="number" id="pay-bot" value="85" min="1">
+      </div>
+      <div>
+        <label>จ่ายโต๊ด (x)</label>
+        <input type="number" id="pay-tod" value="120" min="1">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-gold" onclick="savePoy()">💾 บันทึกโพย</button>
+  <button class="btn btn-outline" onclick="clearForm()">🗑 ล้างฟอร์ม</button>
+</div>
+
+<!-- TAB: CHECK -->
+<div class="content" id="tab-check">
+  <div class="card">
+    <div class="card-title">🏆 กรอกผลรางวัล</div>
+    <label>เลขบน (2-3 หลัก)</label>
+    <input type="text" id="win-top" placeholder="เช่น 456" maxlength="3">
+    <label>เลขล่าง (2 หลัก)</label>
+    <input type="text" id="win-bot" placeholder="เช่น 23" maxlength="2">
+  </div>
+
+  <div class="card">
+    <div class="card-title">📂 เลือกโพยที่จะตรวจ</div>
+    <select id="check-select">
+      <option value="">— เลือกโพย —</option>
+    </select>
+  </div>
+
+  <button class="btn btn-gold" onclick="calcResult()">🔍 คำนวณผลกำไร</button>
+
+  <div class="result-box" id="result-box">
+    <div style="font-size:0.8rem;color:var(--muted)">ผลสุทธิ</div>
+    <div class="result-big" id="result-total"></div>
+    <div class="result-detail" id="result-detail"></div>
+  </div>
+</div>
+
+<!-- TAB: HISTORY -->
+<div class="content" id="tab-history">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+    <button class="btn btn-red btn-sm" onclick="clearAll()">🗑 ล้างทั้งหมด</button>
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let rows = [];
+let poys = JSON.parse(localStorage.getItem('lotto_poys') || '[]');
+
+// --- TABS ---
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+  document.querySelector(`#tab-${t}`).classList.add('active');
+  event.target.classList.add('active');
+  if (t === 'history') renderHistory();
+  if (t === 'check') renderCheckSelect();
+}
+
+// --- IMAGE ---
+function previewImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = document.getElementById('img-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('img-label').style.display = 'none';
+  };
+  r.readAsDataURL(file);
+}
+
+// --- ROWS ---
+function addRow() {
+  const idx = rows.length;
+  rows.push({ num: '', top: '', bot: '', tod: '' });
+  renderRows();
+  // focus new number input
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.row-num');
+    if (inputs[idx]) inputs[idx].focus();
+  }, 50);
+}
+
+function delRow(i) {
+  rows.splice(i, 1);
+  renderRows();
+}
+
+function updateRow(i, field, val) {
+  rows[i][field] = val;
+}
+
+function renderRows() {
+  const c = document.getElementById('rows-container');
+  if (rows.length === 0) {
+    c.innerHTML = '<div class="empty" style="padding:16px 0">ยังไม่มีตัวเลข — กด ➕ เพิ่มแถว</div>';
+    return;
+  }
+  c.innerHTML = rows.map((r, i) => `
+    <div class="row-item">
+      <div class="row-idx">${i+1}</div>
+      <input class="row-num" type="text" maxlength="3" placeholder="เลข"
+        value="${r.num}" oninput="updateRow(${i},'num',this.value)"
+        style="font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:700;color:var(--gold);text-align:center">
+      <input type="number" placeholder="0" value="${r.top}" min="0"
+        oninput="updateRow(${i},'top',this.value)" style="text-align:center">
+      <input type="number" placeholder="0" value="${r.bot}" min="0"
+        oninput="updateRow(${i},'bot',this.value)" style="text-align:center">
+      <input type="number" placeholder="0" value="${r.tod}" min="0"
+        oninput="updateRow(${i},'tod',this.value)" style="text-align:center">
+      <button class="row-del" onclick="delRow(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+// --- SAVE ---
+function savePoy() {
+  const name = document.getElementById('customer-name').value.trim();
+  if (!name) { toast('กรุณากรอกชื่อลูกค้า', 'error'); return; }
+  const validRows = rows.filter(r => r.num && (r.top || r.bot || r.tod));
+  if (validRows.length === 0) { toast('กรุณาเพิ่มตัวเลขอย่างน้อย 1 แถว', 'error'); return; }
+
+  const poy = {
+    id: Date.now(),
+    name,
+    date: new Date().toLocaleString('th-TH'),
+    rows: validRows,
+    payTop: parseFloat(document.getElementById('pay-top').value) || 90,
+    payBot: parseFloat(document.getElementById('pay-bot').value) || 85,
+    payTod: parseFloat(document.getElementById('pay-tod').value) || 120,
+    img: document.getElementById('img-preview').src || '',
+    total: validRows.reduce((s, r) => s + (parseFloat(r.top)||0) + (parseFloat(r.bot)||0) + (parseFloat(r.tod)||0), 0)
+  };
+
+  poys.unshift(poy);
+  localStorage.setItem('lotto_poys', JSON.stringify(poys));
+  toast('บันทึกโพยเรียบร้อย ✓', 'success');
+  clearForm();
+}
+
+function clearForm() {
+  document.getElementById('customer-name').value = '';
+  document.getElementById('img-preview').src = '';
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-label').style.display = '';
+  document.getElementById('file-img').value = '';
+  rows = [];
+  renderRows();
+}
+
+// --- CHECK ---
+function renderCheckSelect() {
+  const sel = document.getElementById('check-select');
+  sel.innerHTML = '<option value="">— เลือกโพย —</option>' +
+    poys.map(p => `<option value="${p.id}">${p.name} (${p.date}) ยอด ${p.total.toLocaleString()} บ.</option>`).join('');
+}
+
+function calcResult() {
+  const winTop = document.getElementById('win-top').value.trim();
+  const winBot = document.getElementById('win-bot').value.trim();
+  const selId = document.getElementById('check-select').value;
+  if (!selId) { toast('เลือกโพยก่อน', 'error'); return; }
+  const poy = poys.find(p => p.id == selId);
+  if (!poy) return;
+
+  let totalIn = poy.total;
+  let totalOut = 0;
+  let details = [];
+
+  poy.rows.forEach(r => {
+    const num = r.num.trim();
+    const top = parseFloat(r.top) || 0;
+    const bot = parseFloat(r.bot) || 0;
+    const tod = parseFloat(r.tod) || 0;
+
+    // บน: ตรงเลข 3 ตัว หรือ 2 ตัว
+    let wonTop = 0, wonBot = 0, wonTod = 0;
+    if (winTop && num.length === winTop.length && num === winTop) wonTop = top * poy.payTop;
+    if (winTop && num.length === 2 && winTop.length >= 2 && winTop.slice(-2) === num) wonTop = top * poy.payTop;
+    // ล่าง: 2 ตัว
+    if (winBot && num.length === 2 && winBot === num) wonBot = bot * poy.payBot;
+    // โต๊ด: เลข 3 ตัวสลับที่
+    if (winTop && num.length === 3 && winTop.length === 3) {
+      const perms = getPerms(winTop);
+      if (perms.includes(num)) wonTod = tod * poy.payTod;
+    }
+
+    const out = wonTop + wonBot + wonTod;
+    if (out > 0) {
+      totalOut += out;
+      details.push(`${num}: จ่าย ${out.toLocaleString()} บ.`);
+    }
+  });
+
+  const net = totalIn - totalOut;
+  const box = document.getElementById('result-box');
+  const total = document.getElementById('result-total');
+  const detail = document.getElementById('result-detail');
+  box.className = 'result-box show';
+  total.className = 'result-big ' + (net >= 0 ? 'profit' : 'loss');
+  total.textContent = (net >= 0 ? '+' : '') + net.toLocaleString() + ' บ.';
+  detail.innerHTML = `รับเข้า: ${totalIn.toLocaleString()} | จ่ายออก: ${totalOut.toLocaleString()}<br>` + details.join('<br>');
+}
+
+function getPerms(s) {
+  if (s.length <= 1) return [s];
+  let res = [];
+  for (let i = 0; i < s.length; i++) {
+    const rest = getPerms(s.slice(0, i) + s.slice(i+1));
+    rest.forEach(r => res.push(s[i] + r));
+  }
+  return [...new Set(res)];
+}
+
+// --- HISTORY ---
+function renderHistory() {
+  const c = document.getElementById('history-list');
+  if (poys.length === 0) {
+    c.innerHTML = '<div class="empty">ยังไม่มีประวัติโพย</div>';
+    return;
+  }
+  c.innerHTML = poys.map((p, i) => `
+    <div class="history-item" id="hi-${p.id}" onclick="toggleHistory(${p.id})">
+      <div class="h-top">
+        <div>
+          <div class="h-name">${p.name}</div>
+          <div class="h-date">${p.date}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'IBM Plex Mono';font-size:1rem;font-weight:700;color:var(--gold)">${p.total.toLocaleString()}</div>
+          <div style="font-size:0.68rem;color:var(--muted)">บาท</div>
+        </div>
+      </div>
+      <div class="h-stats">
+        <div class="h-stat">${p.rows.length} รายการ</div>
+        <div class="h-stat">บน: <span>${p.payTop}x</span></div>
+        <div class="h-stat">ล่าง: <span>${p.payBot}x</span></div>
+        <div class="h-stat">โต๊ด: <span>${p.payTod}x</span></div>
+      </div>
+      <div class="h-detail">
+        <div class="h-row" style="margin-bottom:4px">
+          <div class="h-head">เลข</div>
+          <div class="h-head" style="text-align:center">บน</div>
+          <div class="h-head" style="text-align:center">ล่าง</div>
+          <div class="h-head" style="text-align:center">โต๊ด</div>
+        </div>
+        ${p.rows.map(r => `
+          <div class="h-row">
+            <div class="num">${r.num}</div>
+            <div class="amt">${r.top || '-'}</div>
+            <div class="amt">${r.bot || '-'}</div>
+            <div class="amt">${r.tod || '-'}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="h-actions">
+        <button class="btn btn-green btn-sm" onclick="event.stopPropagation();sendLine(${p.id})">📤 ส่ง Line</button>
+        <button class="btn btn-red btn-sm" onclick="event.stopPropagation();deletePoy(${p.id})">🗑 ลบ</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleHistory(id) {
+  const el = document.getElementById(`hi-${id}`);
+  el.classList.toggle('expanded');
+}
+
+function deletePoy(id) {
+  if (!confirm('ลบโพยนี้?')) return;
+  poys = poys.filter(p => p.id != id);
+  localStorage.setItem('lotto_poys', JSON.stringify(poys));
+  renderHistory();
+  toast('ลบแล้ว', 'success');
+}
+
+function clearAll() {
+  if (!confirm('ล้างประวัติทั้งหมด?')) return;
+  poys = [];
+  localStorage.setItem('lotto_poys', JSON.stringify(poys));
+  renderHistory();
+  toast('ล้างประวัติแล้ว', 'success');
+}
+
+function sendLine(id) {
+  const p = poys.find(x => x.id == id);
+  if (!p) return;
+  let msg = `💰 โพยหวย\nชื่อ: ${p.name}\nวันที่: ${p.date}\n${'─'.repeat(20)}\n`;
+  msg += `เลข\t\tบน\tล่าง\tโต๊ด\n`;
+  p.rows.forEach(r => {
+    msg += `${r.num}\t\t${r.top||0}\t${r.bot||0}\t${r.tod||0}\n`;
+  });
+  msg += `${'─'.repeat(20)}\nยอดรวม: ${p.total.toLocaleString()} บาท`;
+  const url = `https://line.me/R/msg/text/?${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+// --- TOAST ---
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// Init
+renderRows();
+</script>
 </body>
 </html>
